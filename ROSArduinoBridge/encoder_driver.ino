@@ -30,24 +30,57 @@
 #elif defined(ARDUINO_ENC_COUNTER)
   volatile long left_enc_pos = 0L;
   volatile long right_enc_pos = 0L;
-  static const int8_t ENC_STATES [] = {0,1,-1,0,-1,0,0,1,1,0,0,-1,0,-1,1,0};  //encoder lookup table
+  static const int8_t ENC_STATES [] = {
+        //  prev A, prev B, curr A, curr B
+     0, //       0,      0,      0,      0 (No change)
+     1, //       0,      0,      0,      1 (Detect clockwise start)
+    -1, //       0,      0,      1,      0 (Detect anti-clockwise start)
+     0, //       0,      0,      1,      1 (NA)
+    -1, //       0,      1,      0,      0 (Detect anti-clockwise end)
+     0, //       0,      1,      0,      1 (During a rising edge - clockwise)
+     0, //       0,      1,      1,      0 (NA)
+     1, //       0,      1,      1,      1
+     1, //       1,      0,      0,      0 (Detect clockwise end)
+     0, //       1,      0,      0,      1 (NA)
+     0, //       1,      0,      1,      0 (During a risig edge - anti-clockwise)
+    -1, //       1,      0,      1,      1
+     0, //       1,      1,      0,      0 (NA)
+    -1, //       1,      1,      0,      1
+     1, //       1,      1,      1,      0
+     0, //       1,      1,      1,      1 (No change)
+  };  //encoder lookup table
     
   /* Interrupt routine for LEFT encoder, taking care of actual counting */
-  ISR (PCINT2_vect){
+  // ISR (PCINT2_vect){
+  void readLeftEncoder_Int() {
   	static uint8_t enc_last=0;
-        
-	enc_last <<=2; //shift previous state two places
-	enc_last |= (PIND & (3 << 2)) >> 2; //read the current state into lowest 2 bits
+
+    enc_last <<=2; //shift previous state two places
+
+    // enc_last |= (PIND & (3 << 2)) >> 2; //read the current state into lowest 2 bits
   
+    int encA = digitalRead(LEFT_ENC_PIN_A);
+    int encB = digitalRead(LEFT_ENC_PIN_B);
+
+    int enc_curr = encB << 1 | encA;
+    enc_last |= enc_curr;
+
   	left_enc_pos += ENC_STATES[(enc_last & 0x0f)];
   }
   
   /* Interrupt routine for RIGHT encoder, taking care of actual counting */
-  ISR (PCINT1_vect){
-        static uint8_t enc_last=0;
-          	
-	enc_last <<=2; //shift previous state two places
-	enc_last |= (PINC & (3 << 4)) >> 4; //read the current state into lowest 2 bits
+  // ISR (PCINT1_vect){
+  void readRightEncoder_Int() {
+    static uint8_t enc_last=0;
+
+    enc_last <<=2; //shift previous state two places
+    // enc_last |= (PINC & (3 << 4)) >> 4; //read the current state into lowest 2 bits
+
+    int encA = digitalRead(RIGHT_ENC_PIN_A);
+    int encB = digitalRead(RIGHT_ENC_PIN_B);
+
+    int enc_curr = encB << 1 | encA;
+    enc_last |= enc_curr;
   
   	right_enc_pos += ENC_STATES[(enc_last & 0x0f)];
   }
