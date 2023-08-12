@@ -56,27 +56,10 @@
     setMotorSpeed(RIGHT, rightSpeed);
   }
 #elif defined L298_MOTOR_DRIVER
-  void initMotorController() {
-    setMotor(0, RIGHT_MOTOR_ENABLE, 0, RIGHT_MOTOR_FORWARD, RIGHT_MOTOR_BACKWARD);
-    setMotor(0, LEFT_MOTOR_ENABLE,  0, LEFT_MOTOR_FORWARD,  LEFT_MOTOR_BACKWARD);
-
-    // digitalWrite(RIGHT_MOTOR_ENABLE, HIGH);
-    // digitalWrite(LEFT_MOTOR_ENABLE, HIGH);
-  }
-
-  void setMotor(int dir, int pwmVal, int pwm, int in1, int in2) {
-    analogWrite(pwm, pwmVal);
-    if (dir == 1) {           // Clockwise
-      digitalWrite(in1, HIGH);
-      digitalWrite(in2, LOW);
-    } else if (dir == -1) {   // Anti-clockwise
-      digitalWrite(in1, LOW);
-      digitalWrite(in2, HIGH);
-    } else {                  // Stop
-      digitalWrite(in1, LOW);
-      digitalWrite(in2, LOW);
-    }
-  }
+  // void initMotorController() {
+  //   digitalWrite(RIGHT_MOTOR_ENABLE, HIGH);
+  //   digitalWrite(LEFT_MOTOR_ENABLE, HIGH);
+  // }
   
   // void setMotorSpeed(int i, int spd) {
   //   unsigned char reverse = 0;
@@ -99,6 +82,25 @@
   //   }
   // }
 
+  void initMotorController() {
+    setMotor(0, RIGHT_MOTOR_ENABLE, 0, RIGHT_MOTOR_IN1, RIGHT_MOTOR_IN2);
+    setMotor(0, LEFT_MOTOR_ENABLE,  0, LEFT_MOTOR_IN1,  LEFT_MOTOR_IN2);
+  }
+
+  void setMotor(int dir, int pwmVal, int pwm, int in1, int in2) {
+    analogWrite(pwm, pwmVal);
+    if (dir == 1) {           // Clockwise
+      digitalWrite(in1, HIGH);
+      digitalWrite(in2, LOW);
+    } else if (dir == -1) {   // Counter-clockwise
+      digitalWrite(in1, LOW);
+      digitalWrite(in2, HIGH);
+    } else {                  // Stop
+      digitalWrite(in1, LOW);
+      digitalWrite(in2, LOW);
+    }
+  }
+
   void setMotorSpeed(int motorId, int speed) {
     int dir = 1;
     if (speed < 0) {
@@ -111,17 +113,18 @@
     }
 
     int pwm = RIGHT_MOTOR_ENABLE;
-    int in1 = RIGHT_MOTOR_FORWARD;
-    int in2 = RIGHT_MOTOR_BACKWARD;
+    int in1 = RIGHT_MOTOR_IN1;
+    int in2 = RIGHT_MOTOR_IN2;
     if (motorId == LEFT) {
       pwm = LEFT_MOTOR_ENABLE;
-      in1 = LEFT_MOTOR_FORWARD;
-      in2 = LEFT_MOTOR_BACKWARD;
+      in1 = LEFT_MOTOR_IN1;
+      in2 = LEFT_MOTOR_IN2;
     }
 
     setMotor(dir, speed, pwm, in1, in2);
   }
   
+  // Original
   void setMotorSpeeds(int leftSpeed, int rightSpeed) {
     setMotorSpeed(LEFT, leftSpeed);
     setMotorSpeed(RIGHT, rightSpeed);
