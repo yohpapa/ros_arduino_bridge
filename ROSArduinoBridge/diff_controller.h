@@ -107,6 +107,32 @@ void updatePID() {
   /* Read the encoders */
   leftPID.Encoder = readEncoder(LEFT);
   rightPID.Encoder = readEncoder(RIGHT);
+
+  // if (moving) {
+  //   Serial.print("Left = (target: ");
+  //   Serial.print(leftPID.TargetTicksPerFrame);
+  //   Serial.print(", Left encoder int: ");
+  //   Serial.print(getInterrutCount(LEFT));
+  //   Serial.print(", Left encoder: ");
+  //   Serial.print(leftPID.Encoder);
+  //   Serial.print(", Prev encoder: ");
+  //   Serial.print(leftPID.PrevEnc);
+  //   Serial.print(", Error: ");
+  //   Serial.print(leftPID.TargetTicksPerFrame - leftPID.Encoder + leftPID.PrevEnc);
+  //   Serial.print("), ");
+
+  //   Serial.print("Right = (target: ");
+  //   Serial.print(rightPID.TargetTicksPerFrame);
+  //   Serial.print(", Right encoder int: ");
+  //   Serial.print(getInterrutCount(RIGHT));
+  //   Serial.print(", Right encoder: ");
+  //   Serial.print(rightPID.Encoder);
+  //   Serial.print(", Prev encoder: ");
+  //   Serial.print(rightPID.PrevEnc);
+  //   Serial.print(", Error: ");
+  //   Serial.print(rightPID.TargetTicksPerFrame - rightPID.Encoder + rightPID.PrevEnc);
+  //   Serial.print("), ");
+  // }
   
   /* If we're not moving there is nothing more to do */
   if (!moving){
@@ -123,6 +149,12 @@ void updatePID() {
   /* Compute PID update for each motor */
   doPID(&rightPID);
   doPID(&leftPID);
+
+  // Serial.print("Output = (left: ");
+  // Serial.print(leftPID.output);
+  // Serial.print(", right: ");
+  // Serial.print(rightPID.output);
+  // Serial.println(")");
 
   /* Set the motor speeds accordingly */
   setMotorSpeeds(leftPID.output, rightPID.output);
