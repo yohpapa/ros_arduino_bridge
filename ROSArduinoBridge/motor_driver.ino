@@ -57,12 +57,11 @@
   }
 #elif defined L298_MOTOR_DRIVER
   void initMotorController() {
-    setMotor(0, RIGHT_MOTOR_PWM, 0, RIGHT_MOTOR_FORWARD, RIGHT_MOTOR_BACKWARD);
-    setMotor(0, LEFT_MOTOR_PWM,  0, LEFT_MOTOR_FORWARD,  LEFT_MOTOR_BACKWARD);
+    setMotor(0, 0, RIGHT_MOTOR_PWM, RIGHT_MOTOR_FORWARD, RIGHT_MOTOR_BACKWARD);
+    setMotor(0, 0, LEFT_MOTOR_PWM,  LEFT_MOTOR_FORWARD,  LEFT_MOTOR_BACKWARD);
   }
 
   void setMotor(int dir, int pwmVal, int pwmPin, int forwardPin, int backwardPin) {
-
     analogWrite(pwmPin, pwmVal);
     if (dir == 1) {           // Clockwise
       digitalWrite(forwardPin, HIGH);

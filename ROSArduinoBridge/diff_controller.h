@@ -107,9 +107,6 @@ void doPID(SetPointInfo * p) {
 
   // We force PID to output minimum voltage when it does not make any change with low voltage.
   if (p->counter >= COUNT_ACCEL_PWM_VALUE) {
-    // Serial.print(" <Accelerated!> ");
-    // long orginal = output;
-
     if (abs(output) < THRESHOLD_LOW_PWM_VALUE) {
       if (Perror > 0) {
         if (output > 0) {
@@ -124,11 +121,6 @@ void doPID(SetPointInfo * p) {
           output = 0;
         }
       }
-
-      // Serial.print(orginal);
-      // Serial.print(" -> ");
-      // Serial.print(output);
-      // Serial.println("");
     }
 
     p->counter = 0;
@@ -155,28 +147,6 @@ void updatePID() {
   leftPID.Encoder = readEncoder(LEFT);
   rightPID.Encoder = readEncoder(RIGHT);
 
-  // if (moving) {
-  //   Serial.print("Left = (target: ");
-  //   Serial.print(leftPID.TargetTicksPerFrame);
-  //   Serial.print(", Left encoder: ");
-  //   Serial.print(leftPID.Encoder);
-  //   Serial.print(", Prev encoder: ");
-  //   Serial.print(leftPID.PrevEnc);
-  //   Serial.print(", Error: ");
-  //   Serial.print(leftPID.TargetTicksPerFrame - leftPID.Encoder + leftPID.PrevEnc);
-  //   Serial.print("), ");
-
-  //   Serial.print("Right = (target: ");
-  //   Serial.print(rightPID.TargetTicksPerFrame);
-  //   Serial.print(", Right encoder: ");
-  //   Serial.print(rightPID.Encoder);
-  //   Serial.print(", Prev encoder: ");
-  //   Serial.print(rightPID.PrevEnc);
-  //   Serial.print(", Error: ");
-  //   Serial.print(rightPID.TargetTicksPerFrame - rightPID.Encoder + rightPID.PrevEnc);
-  //   Serial.println(")");
-  // }
-  
   /* If we're not moving there is nothing more to do */
   if (!moving){
     /*
@@ -189,15 +159,20 @@ void updatePID() {
     return;
   }
 
+  // Debug info for Plotter
+  // Serial.print("left_target:");
+  // Serial.print(leftPID.TargetTicksPerFrame);
+  // Serial.print(",left_input:");
+  // Serial.print(leftPID.Encoder - leftPID.PrevEnc);
+  // Serial.print(",right_target:");
+  // Serial.print(rightPID.TargetTicksPerFrame);
+  // Serial.print(",right_input:");
+  // Serial.print(rightPID.Encoder - rightPID.PrevEnc);
+  // Serial.println("");
+  
   /* Compute PID update for each motor */
   doPID(&rightPID);
   doPID(&leftPID);
-
-  // Serial.print("Output = (left: ");
-  // Serial.print(leftPID.output);
-  // Serial.print(", right: ");
-  // Serial.print(rightPID.output);
-  // Serial.println(")");
 
   /* Set the motor speeds accordingly */
   setMotorSpeeds(leftPID.output, rightPID.output);
